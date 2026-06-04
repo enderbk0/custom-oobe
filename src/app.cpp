@@ -15,30 +15,39 @@ App::~App() {
 bool App::Initialize(HINSTANCE hInstance) {
     m_hInstance = hInstance;
 
+    MessageBoxW(nullptr, L"Step 1: ConfigManager init", L"Debug", MB_OK);
     if (!ConfigManager::Instance().Initialize()) {
         MessageBoxW(nullptr, L"Failed to initialize configuration.",
                      L"Custom OOBE", MB_ICONERROR);
         return false;
     }
+    MessageBoxW(nullptr, L"Step 2: ConfigManager done", L"Debug", MB_OK);
 
     Logger::Instance().Initialize(ConfigManager::Instance().GetConfig().logPath);
+    MessageBoxW(nullptr, L"Step 3: Logger done", L"Debug", MB_OK);
     StateManager::Instance().Initialize(ConfigManager::Instance().GetConfig().statePath);
+    MessageBoxW(nullptr, L"Step 4: StateManager done", L"Debug", MB_OK);
     Logger::Instance().Info("=== Custom OOBE Starting ===");
     Logger::Instance().Info("Version: 1.0.0");
+    MessageBoxW(nullptr, L"Step 5: Log writes done", L"Debug", MB_OK);
 
     m_mainWindow = std::make_unique<MainWindow>();
+    MessageBoxW(nullptr, L"Step 6: MainWindow constructed", L"Debug", MB_OK);
     if (!m_mainWindow->Create()) {
         Logger::Instance().Error("Failed to create main window");
-        MessageBoxW(nullptr, L"Failed to create main window", L"Debug", MB_OK);
+        MessageBoxW(nullptr, L"Step 7a: MainWindow::Create FAILED", L"Debug", MB_OK);
         return false;
     }
+    MessageBoxW(nullptr, L"Step 7: MainWindow::Create done", L"Debug", MB_OK);
 
     m_mainWindow->Show();
+    MessageBoxW(nullptr, L"Step 8: Show done", L"Debug", MB_OK);
     m_mainWindow->CenterOnScreen();
+    MessageBoxW(nullptr, L"Step 9: Center done", L"Debug", MB_OK);
 
     m_initialized = true;
     Logger::Instance().Info("App initialized successfully");
-    MessageBoxW(nullptr, L"App initialized successfully", L"Debug", MB_OK);
+    MessageBoxW(nullptr, L"Step 10: Initialize returning true", L"Debug", MB_OK);
     return true;
 }
 
