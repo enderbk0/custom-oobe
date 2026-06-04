@@ -84,11 +84,7 @@ void BackendService::Shutdown() {
 }
 
 std::string BackendService::ProcessCommand(const BridgeMessage& message) {
-    auto it = GetHandler()->m_handlers.find(message.command);
-    if (it != GetHandler()->m_handlers.end()) {
-        return it->second(message);
-    }
-    return MessageHandler::CreateError(message.requestId, "Unknown command");
+    return GetHandler()->CallHandler(message.command, message);
 }
 
 std::string BackendService::GetStateJson() const {

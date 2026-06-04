@@ -63,10 +63,12 @@ public:
     void RegisterHandler(BridgeCommand command, HandlerCallback handler);
     void SetDefaultHandler(HandlerCallback handler);
 
+    std::string CallHandler(BridgeCommand command, const BridgeMessage& msg);
+
     static BridgeMessage ParseMessage(const std::string& json);
     static std::string CreateResponse(const std::string& requestId,
                                        bool success,
-                                       const std::string& data);
+                                       const std::string& data = "");
     static std::string CreateError(const std::string& requestId,
                                     const std::string& error);
 

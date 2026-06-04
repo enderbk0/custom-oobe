@@ -5,6 +5,15 @@
 #include <sstream>
 #include <shlwapi.h>
 
+static std::string NarrowString(const std::wstring& wide) {
+    if (wide.empty()) return {};
+    int len = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (len <= 0) return {};
+    std::string result(static_cast<size_t>(len) - 1, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, result.data(), len, nullptr, nullptr);
+    return result;
+}
+
 StateManager& StateManager::Instance() {
     static StateManager instance;
     return instance;
@@ -128,7 +137,7 @@ bool StateManager::SaveToDisk() const {
     std::ofstream file(m_stateFilePath);
     if (!file.is_open()) {
         Logger::Instance().Error("Failed to save state to " +
-            std::string(m_stateFilePath.begin(), m_stateFilePath.end()));
+            NarrowString(m_stateFilePath));
         return false;
     }
     file << ToJson();

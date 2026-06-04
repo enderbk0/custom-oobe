@@ -62,6 +62,21 @@ void MessageHandler::HandleMessage(const std::string& messageJson,
     }
 }
 
+std::string MessageHandler::CallHandler(BridgeCommand command, const BridgeMessage& msg) {
+    auto it = m_handlers.find(command);
+    if (it != m_handlers.end()) {
+        try {
+            return it->second(msg);
+        } catch (const std::exception& e) {
+            return CreateError(msg.requestId, e.what());
+        }
+    }
+    if (m_defaultHandler) {
+        return m_defaultHandler(msg);
+    }
+    return CreateError(msg.requestId, "Unhandled command");
+}
+
 void MessageHandler::RegisterHandler(BridgeCommand command, HandlerCallback handler) {
     m_handlers[command] = std::move(handler);
 }

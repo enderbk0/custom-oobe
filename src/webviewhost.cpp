@@ -7,10 +7,19 @@
 
 using namespace Microsoft::WRL;
 
+static std::string NarrowString(const std::wstring& wide) {
+    if (wide.empty()) return {};
+    int len = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (len <= 0) return {};
+    std::string result(static_cast<size_t>(len) - 1, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, result.data(), len, nullptr, nullptr);
+    return result;
+}
+
 WebViewHost::WebViewHost() {
     m_frontendPath = ConfigManager::Instance().GetConfig().frontendPath;
     Logger::Instance().Debug("WebViewHost created, frontend path: " +
-        std::string(m_frontendPath.begin(), m_frontendPath.end()));
+        NarrowString(m_frontendPath));
 }
 
 WebViewHost::~WebViewHost() {
@@ -55,7 +64,7 @@ bool WebViewHost::Initialize(HWND parentWindow) {
 
     std::wstring indexPath = m_frontendPath + L"\\index.html";
     Logger::Instance().Info("Navigating to: " +
-        std::string(indexPath.begin(), indexPath.end()));
+        NarrowString(indexPath));
     m_webview->Navigate(indexPath.c_str());
 
     m_initialized = true;

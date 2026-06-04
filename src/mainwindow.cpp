@@ -110,7 +110,7 @@ bool MainWindow::RegisterWindowClass() {
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = m_hInstance;
     wc.hIcon = LoadIconW(m_hInstance, MAKEINTRESOURCEW(IDI_APP_ICON));
-    wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
+    wc.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(IDC_ARROW));
     wc.hbrBackground = nullptr;
     wc.lpszClassName = CLASS_NAME;
     wc.hIconSm = LoadIconW(m_hInstance, MAKEINTRESOURCEW(IDI_APP_ICON));
