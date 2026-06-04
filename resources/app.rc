@@ -1,4 +1,1 @@
 IDI_APP_ICON ICON "app.ico"
-
-#define RT_MANIFEST 24
-1 RT_MANIFEST "app.manifest"
