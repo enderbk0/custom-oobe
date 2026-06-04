@@ -1,7 +1,6 @@
 #include "bridgemessage.h"
 #include "logging.h"
 #include "jsonutils.h"
-#include <WebView2.h>
 #include <sstream>
 
 bool BridgeMessage::IsDevCommand() const {
