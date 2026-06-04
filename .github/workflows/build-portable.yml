@@ -1,0 +1,90 @@
+name: Build Portable (with WebView2 Runtime)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
+    - name: Cache vcpkg
+      id: cache-vcpkg
+      uses: actions/cache@v4
+      with:
+        path: |
+          C:\vcpkg\installed
+          C:\vcpkg\packages
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}
+        restore-keys: ${{ runner.os }}-vcpkg-
+
+    - name: Bootstrap vcpkg
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        if (-not (Test-Path "C:\vcpkg")) {
+          git clone https://github.com/microsoft/vcpkg C:\vcpkg
+          & "C:\vcpkg\bootstrap-vcpkg.bat"
+        }
+
+    - name: Install vcpkg deps
+      shell: pwsh
+      run: |
+        & "C:\vcpkg\vcpkg" install --triplet x64-windows
+
+    - name: Download WebView2 Fixed Runtime
+      shell: pwsh
+      run: |
+        $url = "https://msedgewebview2assets.blob.core.windows.net/runtime/webview2_runtime_x64_fixed_version.zip"
+        $zip = "$env:TEMP\wv2.zip"
+        Write-Host "Downloading WebView2 Fixed Runtime..."
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri $url -OutFile $zip
+        Write-Host "Extracting..."
+        Expand-Archive -Path $zip -DestinationPath "runtime" -Force
+        Remove-Item $zip -Force
+        Get-ChildItem "runtime" -Depth 0
+        Write-Host "Size: $(Get-ChildItem runtime -Recurse | Measure-Object Length -Sum | ForEach-Object { '{0:N0} KB' -f ($_.Sum / 1KB) })"
+
+    - name: Configure CMake
+      shell: pwsh
+      run: |
+        cmake -B build -S . `
+          -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET=x64-windows `
+          -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      shell: pwsh
+      run: cmake --build build --config Release
+
+    - name: Package portable
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Path portable -Force
+        Copy-Item "build\Release\*" "portable\" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "runtime\*" "portable\WebView2Runtime\" -Recurse -Force
+        Get-ChildItem "portable" -Depth 0 | ForEach-Object { Write-Host "  $($_.Name)" }
+        Compress-Archive -Path "portable\*" -DestinationPath "custom-oobe-portable.zip"
+
+    - name: Upload portable artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: custom-oobe-portable
+        path: portable/
+        if-no-files-found: error
+
+    - name: Upload portable ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: custom-oobe-portable-zip
+        path: custom-oobe-portable.zip

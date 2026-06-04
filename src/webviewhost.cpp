@@ -61,8 +61,22 @@ bool WebViewHost::Initialize(HWND parentWindow) {
         return false;
     }
 
+    wchar_t modulePath[MAX_PATH];
+    GetModuleFileNameW(nullptr, modulePath, MAX_PATH);
+    std::wstring exeDir(modulePath);
+    size_t p = exeDir.find_last_of(L"\\/");
+    if (p != std::wstring::npos) exeDir = exeDir.substr(0, p);
+
+    std::wstring runtimeDir = exeDir + L"\\WebView2Runtime";
+    PCWSTR browserFolder = nullptr;
+    DWORD attr = GetFileAttributesW(runtimeDir.c_str());
+    if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY)) {
+        browserFolder = runtimeDir.c_str();
+        Logger::Instance().Info("Using bundled WebView2 Runtime");
+    }
+
     HRESULT hr = createEnvFn(
-        nullptr, nullptr, nullptr,
+        browserFolder, nullptr, nullptr,
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [this](HRESULT result,
                 ICoreWebView2Environment* environment) -> HRESULT {
