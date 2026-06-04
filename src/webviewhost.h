@@ -2,9 +2,12 @@
 
 #include <windows.h>
 #include <wil/com.h>
-#include <WebView2.h>
 #include <string>
 #include <memory>
+
+struct ICoreWebView2Controller;
+struct ICoreWebView2;
+struct ICoreWebView2Settings;
 
 class BackendService;
 class MessageHandler;

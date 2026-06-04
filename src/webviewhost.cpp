@@ -3,6 +3,7 @@
 #include "bridgemessage.h"
 #include "config.h"
 #include "logging.h"
+#include <WebView2.h>
 #include <wrl.h>
 
 using namespace Microsoft::WRL;
@@ -14,6 +15,24 @@ static std::string NarrowString(const std::wstring& wide) {
     std::string result(static_cast<size_t>(len) - 1, '\0');
     WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, result.data(), len, nullptr, nullptr);
     return result;
+}
+
+using CreateWebView2EnvironmentFn = HRESULT(WINAPI*)(
+    PCWSTR browserExecutableFolder,
+    PCWSTR userDataFolder,
+    ICoreWebView2EnvironmentOptions* environmentOptions,
+    ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* environmentCreatedHandler);
+
+static CreateWebView2EnvironmentFn LoadWebView2Loader() {
+    HMODULE mod = LoadLibraryW(L"WebView2Loader.dll");
+    if (!mod) return nullptr;
+    auto fn = reinterpret_cast<CreateWebView2EnvironmentFn>(
+        GetProcAddress(mod, "CreateCoreWebView2EnvironmentWithOptions"));
+    if (!fn) {
+        FreeLibrary(mod);
+        return nullptr;
+    }
+    return fn;
 }
 
 WebViewHost::WebViewHost() {
@@ -31,9 +50,17 @@ WebViewHost::~WebViewHost() {
 
 bool WebViewHost::Initialize(HWND parentWindow) {
     m_parentWindow = parentWindow;
-    Logger::Instance().Info("WebViewHost initializing (async)");
+    Logger::Instance().Info("WebViewHost initializing (dynamic load)");
 
-    HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(
+    auto createEnvFn = LoadWebView2Loader();
+    if (!createEnvFn) {
+        Logger::Instance().Warning(
+            "WebView2Loader.dll not found. "
+            "Install WebView2 Runtime from https://go.microsoft.com/fwlink/p/?LinkId=2124703");
+        return false;
+    }
+
+    HRESULT hr = createEnvFn(
         nullptr, nullptr, nullptr,
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [this](HRESULT result,

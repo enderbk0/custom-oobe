@@ -1,5 +1,4 @@
-#define IDI_APP_ICON 101
-#define IDR_APP_MANIFEST 102
-
 IDI_APP_ICON ICON "app.ico"
-IDR_APP_MANIFEST RT_MANIFEST "app.manifest"
+
+#define RT_MANIFEST 24
+1 RT_MANIFEST "app.manifest"

@@ -4,7 +4,8 @@
 #include <functional>
 #include <unordered_map>
 #include <wil/com.h>
-#include <WebView2.h>
+
+struct ICoreWebView2;
 
 enum class BridgeCommand {
     Unknown,
