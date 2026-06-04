@@ -1,5 +1,4 @@
 const PAGE_ORDER = [
-  'welcome',
   'region',
   'keyboard',
   'keyboard-secondary',
@@ -17,7 +16,6 @@ const PAGE_ORDER = [
 ];
 
 const PAGE_TITLES = {
-  'welcome': 'Welcome',
   'region': 'Region',
   'keyboard': 'Keyboard layout',
   'keyboard-secondary': 'Second keyboard layout',

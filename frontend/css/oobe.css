@@ -17,6 +17,7 @@ html, body {
 .wallpaper-layer {
   position: fixed;
   inset: 0;
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 25%, #2d1b3a 50%, #1a2a3a 75%, #0d1b2a 100%);
   background-size: cover;
   background-position: center;
   filter: blur(24px) brightness(0.45) saturate(1.2);
@@ -327,27 +328,6 @@ html, body {
 }
 
 /* Page content styles */
-
-/* Welcome page */
-#page-welcome {
-  text-align: center;
-}
-
-.welcome-icon {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 24px;
-  color: #60cdff;
-}
-
-.welcome-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.welcome-logo {
-  margin-bottom: 32px;
-}
 
 /* Region page */
 .region-list {

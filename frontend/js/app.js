@@ -14,32 +14,13 @@ const App = {
 
     DevMode.init();
 
-    await this.loadWallpaper();
-
-    Router.goTo('welcome');
+    Router.goTo(PAGE_ORDER[0]);
     Router.updateUI();
-  },
-
-  async loadWallpaper() {
-    try {
-      const res = await Promise.race([
-        Bridge.getWallpaper(),
-        new Promise(resolve => setTimeout(() => resolve(null), 1500))
-      ]);
-      if (res && res.data && typeof res.data === 'string' && res.data.length > 100) {
-        const el = document.getElementById('wallpaper');
-        if (el) {
-          el.style.backgroundImage = 'url(' + res.data + ')';
-        }
-      }
-    } catch (e) {
-      console.warn('App: Failed to load wallpaper:', e);
-    }
   },
 
   async loadPageContent() {
     const pageModules = [
-      PageWelcome, PageRegion, PageKeyboard, PageKeyboardSecondary,
+      PageRegion, PageKeyboard, PageKeyboardSecondary,
       PageNetwork, PageLicense, PageDeviceNaming, PageAccount,
       PagePassword, PagePrivacy, PageCustomization, PageSummary,
       PagePreparing, PageHi, PageCompletion
@@ -113,9 +94,23 @@ const App = {
   },
 
   getCurrentPageModule() {
-    const pageId = Router.currentPage;
-    const moduleName = 'Page' + this.capitalize(pageId.replace(/-/g, ''));
-    return window[moduleName];
+    const map = {
+      region: PageRegion,
+      keyboard: PageKeyboard,
+      'keyboard-secondary': PageKeyboardSecondary,
+      network: PageNetwork,
+      license: PageLicense,
+      'device-naming': PageDeviceNaming,
+      account: PageAccount,
+      password: PagePassword,
+      privacy: PagePrivacy,
+      customization: PageCustomization,
+      summary: PageSummary,
+      preparing: PagePreparing,
+      hi: PageHi,
+      completion: PageCompletion
+    };
+    return map[Router.currentPage];
   },
 
   async finishSetup() {
