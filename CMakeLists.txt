@@ -45,7 +45,6 @@ add_executable(custom-oobe WIN32
     ${SOURCES}
     ${HEADERS}
     resources/app.rc
-    resources/app.manifest
 )
 
 target_include_directories(custom-oobe PRIVATE src)
@@ -72,6 +71,8 @@ set_target_properties(custom-oobe PROPERTIES
     WIN32_EXECUTABLE TRUE
     LINKER_LANGUAGE CXX
 )
+
+target_link_options(custom-oobe PRIVATE "/MANIFEST:NO")
 
 add_custom_command(TARGET custom-oobe POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
