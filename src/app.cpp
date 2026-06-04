@@ -26,14 +26,14 @@ bool App::Initialize(HINSTANCE hInstance) {
     Logger::Instance().Info("=== Custom OOBE Starting ===");
     Logger::Instance().Info("Version: 1.0.0");
 
-    auto mainWindow = std::make_unique<MainWindow>();
-    if (!mainWindow->Create()) {
+    m_mainWindow = std::make_unique<MainWindow>();
+    if (!m_mainWindow->Create()) {
         Logger::Instance().Error("Failed to create main window");
         return false;
     }
 
-    mainWindow->Show();
-    mainWindow->CenterOnScreen();
+    m_mainWindow->Show();
+    m_mainWindow->CenterOnScreen();
 
     m_initialized = true;
     Logger::Instance().Info("App initialized successfully");
