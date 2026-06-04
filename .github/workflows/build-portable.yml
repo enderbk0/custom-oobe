@@ -92,7 +92,8 @@ jobs:
       run: |
         New-Item -ItemType Directory -Path portable -Force
         Copy-Item "build\Release\*" "portable\" -Recurse -ErrorAction SilentlyContinue
-        Copy-Item "runtime\*" "portable\WebView2Runtime\" -Recurse -Force
+        New-Item -ItemType Directory -Path "portable\WebView2Runtime" -Force | Out-Null
+        Copy-Item "runtime\*" "portable\WebView2Runtime" -Recurse -Force
         Get-ChildItem "portable" -Depth 0 | ForEach-Object { Write-Host "  $($_.Name)" }
         Compress-Archive -Path "portable\*" -DestinationPath "custom-oobe-portable.zip"
 
