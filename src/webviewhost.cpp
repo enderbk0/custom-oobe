@@ -31,48 +31,89 @@ WebViewHost::~WebViewHost() {
 
 bool WebViewHost::Initialize(HWND parentWindow) {
     m_parentWindow = parentWindow;
-    Logger::Instance().Info("WebViewHost initializing");
+    Logger::Instance().Info("WebViewHost initializing (async)");
 
-    HRESULT hr = CreateEnvironmentWithRetry(parentWindow,
-        m_controller.put(), m_webview.put());
+    HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(
+        nullptr, nullptr, nullptr,
+        Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+            [this](HRESULT result,
+                ICoreWebView2Environment* environment) -> HRESULT {
+                if (FAILED(result)) {
+                    Logger::Instance().Error(
+                        "WebView2 environment creation failed: 0x" +
+                        std::to_string(result));
+                    return result;
+                }
+                if (!environment) {
+                    Logger::Instance().Error(
+                        "WebView2 environment is null");
+                    return E_FAIL;
+                }
+                return environment->CreateCoreWebView2Controller(
+                    m_parentWindow,
+                    Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+                        [this](HRESULT result,
+                            ICoreWebView2Controller* controller) -> HRESULT {
+                            if (FAILED(result)) {
+                                Logger::Instance().Error(
+                                    "WebView2 controller creation failed: 0x" +
+                                    std::to_string(result));
+                                return result;
+                            }
+                            if (!controller) {
+                                Logger::Instance().Error(
+                                    "WebView2 controller is null");
+                                return E_FAIL;
+                            }
+
+                            m_controller = controller;
+                            m_controller->get_CoreWebView2(&m_webview);
+
+                            if (!m_webview) {
+                                Logger::Instance().Error(
+                                    "Failed to get CoreWebView2 from controller");
+                                return E_FAIL;
+                            }
+
+                            m_webview->get_Settings(&m_settings);
+                            if (m_settings) {
+                                m_settings->put_IsScriptEnabled(TRUE);
+                                m_settings->put_IsWebMessageEnabled(TRUE);
+                                m_settings->put_AreDefaultScriptDialogsEnabled(FALSE);
+                                m_settings->put_IsStatusBarEnabled(FALSE);
+                            }
+
+                            RECT bounds;
+                            GetClientRect(m_parentWindow, &bounds);
+                            m_controller->put_Bounds(bounds);
+
+                            SetupEventHandlers(m_webview.get());
+
+                            std::wstring indexPath =
+                                m_frontendPath + L"\\index.html";
+                            Logger::Instance().Info(
+                                "Navigating to: " + NarrowString(indexPath));
+                            m_webview->Navigate(indexPath.c_str());
+
+                            m_initialized = true;
+                            Logger::Instance().Info(
+                                "WebView2 initialized successfully");
+                            return S_OK;
+                        }).Get());
+            }).Get());
 
     if (FAILED(hr)) {
-        Logger::Instance().Error("Failed to create WebView2 environment: 0x" +
+        Logger::Instance().Error(
+            "Failed to initiate WebView2 creation: 0x" +
             std::to_string(hr));
         return false;
     }
 
-    if (!m_webview) {
-        Logger::Instance().Error("WebView2 creation returned null");
-        return false;
-    }
-
-    hr = m_webview->get_Settings(&m_settings);
-    if (SUCCEEDED(hr) && m_settings) {
-        m_settings->put_IsScriptEnabled(TRUE);
-        m_settings->put_IsWebMessageEnabled(TRUE);
-        m_settings->put_AreDefaultScriptDialogsEnabled(FALSE);
-        m_settings->put_IsStatusBarEnabled(FALSE);
-    }
-
-    RECT bounds;
-    GetClientRect(parentWindow, &bounds);
-    m_controller->put_Bounds(bounds);
-
-    SetupEventHandlers(m_webview.get());
-
-    std::wstring indexPath = m_frontendPath + L"\\index.html";
-    Logger::Instance().Info("Navigating to: " +
-        NarrowString(indexPath));
-    m_webview->Navigate(indexPath.c_str());
-
-    m_initialized = true;
-    Logger::Instance().Info("WebViewHost initialized successfully");
     return true;
 }
 
 void WebViewHost::Resize(int width, int height) {
-    if (m_controller) {
+    if (m_initialized && m_controller) {
         RECT bounds = {0, 0, width, height};
         m_controller->put_Bounds(bounds);
     }
@@ -93,52 +134,6 @@ void WebViewHost::PostMessage(const std::wstring& message) {
 void WebViewHost::SetBackend(std::shared_ptr<BackendService> backend) {
     m_backend = backend;
     m_handler = backend ? backend->GetHandler() : nullptr;
-}
-
-HRESULT WebViewHost::CreateEnvironmentWithRetry(HWND hWnd,
-    ICoreWebView2Controller** controller,
-    ICoreWebView2** webview) {
-
-    wil::com_ptr<ICoreWebView2Environment> env;
-    HANDLE envCreated = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-    HRESULT hr = E_FAIL;
-
-    HRESULT createHr = CreateCoreWebView2EnvironmentWithOptions(
-        nullptr, nullptr, nullptr,
-        Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-            [&hr, &env, &envCreated, hWnd, controller,
-             webview](HRESULT result,
-                ICoreWebView2Environment* environment) -> HRESULT {
-                hr = result;
-                if (FAILED(result) || !environment) {
-                    SetEvent(envCreated);
-                    return result;
-                }
-                env = environment;
-                return environment->CreateCoreWebView2Controller(hWnd,
-                    Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-                        [&hr, controller, webview,
-                         &envCreated](HRESULT result,
-                            ICoreWebView2Controller* ctrl) -> HRESULT {
-                            hr = result;
-                            if (SUCCEEDED(result) && ctrl) {
-                                *controller = ctrl;
-                                (*controller)->AddRef();
-                                ctrl->get_CoreWebView2(webview);
-                            }
-                            SetEvent(envCreated);
-                            return hr;
-                        }).Get());
-            }).Get());
-
-    if (FAILED(createHr)) {
-        CloseHandle(envCreated);
-        return createHr;
-    }
-
-    WaitForSingleObject(envCreated, INFINITE);
-    CloseHandle(envCreated);
-    return hr;
 }
 
 void WebViewHost::SetupEventHandlers(ICoreWebView2* webview) {

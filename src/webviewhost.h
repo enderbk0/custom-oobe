@@ -23,10 +23,6 @@ public:
     bool IsInitialized() const { return m_initialized; }
 
 private:
-    static HRESULT CreateEnvironmentWithRetry(HWND hWnd,
-        ICoreWebView2Controller** controller,
-        ICoreWebView2** webview);
-
     void SetupEventHandlers(ICoreWebView2* webview);
 
     wil::com_ptr<ICoreWebView2Controller> m_controller;
