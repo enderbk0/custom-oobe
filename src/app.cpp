@@ -29,7 +29,6 @@ bool App::Initialize(HINSTANCE hInstance) {
     m_mainWindow = std::make_unique<MainWindow>();
     if (!m_mainWindow->Create()) {
         Logger::Instance().Error("Failed to create main window");
-        MessageBoxW(nullptr, L"Failed to create main window", L"Debug", MB_OK);
         return false;
     }
 

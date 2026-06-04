@@ -58,17 +58,14 @@ bool WebViewHost::Initialize(HWND parentWindow) {
         Logger::Instance().Warning(
             "WebView2Loader.dll not found. "
             "Install WebView2 Runtime from https://go.microsoft.com/fwlink/p/?LinkId=2124703");
-        MessageBoxW(nullptr, L"WebView2Loader.dll not found", L"Debug", MB_OK);
         return false;
     }
-    MessageBoxW(nullptr, L"WebView2Loader.dll loaded, creating environment...", L"Debug", MB_OK);
 
     HRESULT hr = createEnvFn(
         nullptr, nullptr, nullptr,
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [this](HRESULT result,
                 ICoreWebView2Environment* environment) -> HRESULT {
-                MessageBoxW(nullptr, L"Environment callback fired", L"Debug", MB_OK);
                 if (FAILED(result)) {
                     Logger::Instance().Error(
                         "WebView2 environment creation failed: 0x" +
@@ -85,7 +82,6 @@ bool WebViewHost::Initialize(HWND parentWindow) {
                     Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
                         [this](HRESULT result,
                             ICoreWebView2Controller* controller) -> HRESULT {
-                            MessageBoxW(nullptr, L"Controller callback fired", L"Debug", MB_OK);
                             if (FAILED(result)) {
                                 Logger::Instance().Error(
                                     "WebView2 controller creation failed: 0x" +
@@ -127,7 +123,6 @@ bool WebViewHost::Initialize(HWND parentWindow) {
                             std::replace(fileUrl.begin(), fileUrl.end(), L'\\', L'/');
                             Logger::Instance().Info(
                                 "Navigating to: " + NarrowString(fileUrl));
-                            MessageBoxW(nullptr, fileUrl.c_str(), L"WebView2 Navigate To", MB_OK);
                             m_webview->Navigate(fileUrl.c_str());
 
                             m_initialized = true;
