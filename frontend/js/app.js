@@ -22,8 +22,11 @@ const App = {
 
   async loadWallpaper() {
     try {
-      const res = await Bridge.getWallpaper();
-      if (res && res.data && res.data.length > 0) {
+      const res = await Promise.race([
+        Bridge.getWallpaper(),
+        new Promise(resolve => setTimeout(() => resolve(null), 1500))
+      ]);
+      if (res && res.data && typeof res.data === 'string' && res.data.length > 100) {
         const el = document.getElementById('wallpaper');
         if (el) {
           el.style.backgroundImage = 'url(' + res.data + ')';

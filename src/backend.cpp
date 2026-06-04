@@ -300,6 +300,10 @@ std::string BackendService::HandleGetWallpaper(const BridgeMessage& msg) {
     }
 
     std::streamsize size = file.tellg();
+    if (size <= 0 || size > 1024 * 1024) {
+        Logger::Instance().Warning("Wallpaper too large or empty, skipping");
+        return MessageHandler::CreateResponse(msg.requestId, true, "");
+    }
     file.seekg(0, std::ios::beg);
     std::vector<uint8_t> buffer(static_cast<size_t>(size));
     if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
