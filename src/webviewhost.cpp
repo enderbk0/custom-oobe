@@ -192,7 +192,13 @@ void WebViewHost::SetupEventHandlers(ICoreWebView2* webview) {
         Callback<ICoreWebView2NavigationCompletedEventHandler>(
             [this](ICoreWebView2* sender,
                 ICoreWebView2NavigationCompletedEventArgs* args) -> HRESULT {
-                Logger::Instance().Info("WebView2 navigation completed");
+                BOOL success = FALSE;
+                COREWEBVIEW2_WEB_ERROR_STATUS errStatus;
+                args->get_IsSuccess(&success);
+                args->get_WebErrorStatus(&errStatus);
+                Logger::Instance().Info("WebView2 nav completed, success=" +
+                    std::to_string(success) + ", error=" +
+                    std::to_string(static_cast<int>(errStatus)));
                 return S_OK;
             }).Get(), token.get());
 }
