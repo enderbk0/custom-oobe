@@ -123,6 +123,7 @@ bool WebViewHost::Initialize(HWND parentWindow) {
                             std::replace(fileUrl.begin(), fileUrl.end(), L'\\', L'/');
                             Logger::Instance().Info(
                                 "Navigating to: " + NarrowString(fileUrl));
+                            MessageBoxW(nullptr, fileUrl.c_str(), L"WebView2 Navigate To", MB_OK);
                             m_webview->Navigate(fileUrl.c_str());
 
                             m_initialized = true;
