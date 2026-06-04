@@ -44,15 +44,35 @@ jobs:
     - name: Download WebView2 Fixed Runtime
       shell: pwsh
       run: |
-        $url = "https://msedgewebview2assets.blob.core.windows.net/runtime/webview2_runtime_x64_fixed_version.zip"
-        $zip = "$env:TEMP\wv2.zip"
-        Write-Host "Downloading WebView2 Fixed Runtime..."
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-WebRequest -Uri $url -OutFile $zip
+        $arch = "x64"
+        Write-Host "Fetching latest release from westinyang/WebView2RuntimeArchive..."
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/westinyang/WebView2RuntimeArchive/releases/latest"
+        $tag = $release.tag_name
+        Write-Host "Latest version: $tag"
+
+        $assetName = "Microsoft.WebView2.FixedVersionRuntime.$tag.$arch.cab"
+        $asset = $release.assets | Where-Object { $_.name -eq $assetName }
+        if (-not $asset) { throw "Asset '$assetName' not found" }
+
+        $cabUrl = $asset.browser_download_url
+        $cabPath = "$env:TEMP\wv2_runtime.cab"
+        Write-Host "Downloading from: $cabUrl"
+        Invoke-WebRequest -Uri $cabUrl -OutFile $cabPath
+
         Write-Host "Extracting..."
-        Expand-Archive -Path $zip -DestinationPath "runtime" -Force
-        Remove-Item $zip -Force
-        Get-ChildItem "runtime" -Depth 0
+        $tmpDir = "$env:TEMP\wv2_runtime_extract"
+        New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
+        & expand $cabPath -F:* $tmpDir
+        if (-not $?) { throw "expand failed" }
+
+        $innerDir = Get-ChildItem $tmpDir -Directory | Select-Object -First 1
+        if (-not $innerDir) { throw "No subfolder found in extracted CAB" }
+        New-Item -ItemType Directory -Path "runtime" -Force | Out-Null
+        Move-Item "$($innerDir.FullName)\*" "runtime\" -Force
+        Remove-Item $tmpDir -Recurse -Force
+        Remove-Item $cabPath -Force
+
+        Get-ChildItem "runtime" -Depth 0 | ForEach-Object { Write-Host "  $($_.Name)" }
         Write-Host "Size: $(Get-ChildItem runtime -Recurse | Measure-Object Length -Sum | ForEach-Object { '{0:N0} KB' -f ($_.Sum / 1KB) })"
 
     - name: Configure CMake
