@@ -64,6 +64,14 @@ jobs:
       run: |
         New-Item -ItemType Directory -Path artifacts -Force
         Copy-Item -Recurse "build\Release\*" "artifacts\" -ErrorAction SilentlyContinue
+        $dllPath = "C:\vcpkg\installed\x64-windows\bin\WebView2Loader.dll"
+        if (Test-Path $dllPath) {
+          Copy-Item $dllPath "artifacts\"
+          Write-Host "Copied WebView2Loader.dll"
+        } else {
+          Write-Host "WebView2Loader.dll not found at $dllPath"
+        }
+        Get-ChildItem -Path "artifacts" | ForEach-Object { Write-Host "  $($_.Name)" }
         Compress-Archive -Path "artifacts\*" -DestinationPath "custom-oobe-release.zip"
 
     - name: Upload build artifacts

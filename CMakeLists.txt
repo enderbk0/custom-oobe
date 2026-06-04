@@ -84,3 +84,21 @@ add_custom_command(TARGET custom-oobe POST_BUILD
         "$<TARGET_FILE_DIR:custom-oobe>/frontend"
     COMMENT "Copying frontend assets to output directory"
 )
+
+find_file(WEBVIEW2_LOADER_DLL
+    NAMES WebView2Loader.dll
+    PATHS
+        "${CMAKE_SOURCE_DIR}/vcpkg_installed/x64-windows/bin"
+        "$ENV{VCPKG_ROOT}/installed/$ENV{VCPKG_DEFAULT_TRIPLET}/bin"
+        "$ENV{VCPKG_ROOT}/installed/x64-windows/bin"
+        "C:/vcpkg/installed/x64-windows/bin"
+    NO_DEFAULT_PATH
+)
+if(WEBVIEW2_LOADER_DLL)
+    add_custom_command(TARGET custom-oobe POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${WEBVIEW2_LOADER_DLL}"
+            "$<TARGET_FILE_DIR:custom-oobe>/"
+        COMMENT "Copying WebView2Loader.dll"
+    )
+endif()
