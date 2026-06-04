@@ -72,8 +72,6 @@ set_target_properties(custom-oobe PROPERTIES
     LINKER_LANGUAGE CXX
 )
 
-target_link_options(custom-oobe PRIVATE "/MANIFEST:EMIT")
-
 add_custom_command(TARGET custom-oobe POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
         "$<TARGET_FILE_DIR:custom-oobe>/frontend/css"
