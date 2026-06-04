@@ -14,10 +14,24 @@ const App = {
 
     DevMode.init();
 
-    this.detectTheme();
+    await this.loadWallpaper();
 
     Router.goTo('welcome');
     Router.updateUI();
+  },
+
+  async loadWallpaper() {
+    try {
+      const res = await Bridge.getWallpaper();
+      if (res && res.data && res.data.length > 0) {
+        const el = document.getElementById('wallpaper');
+        if (el) {
+          el.style.backgroundImage = 'url(' + res.data + ')';
+        }
+      }
+    } catch (e) {
+      console.warn('App: Failed to load wallpaper:', e);
+    }
   },
 
   async loadPageContent() {
@@ -134,14 +148,6 @@ const App = {
     Router.goTo('hi');
     await new Promise(resolve => setTimeout(resolve, 2000));
     Router.goTo('completion');
-  },
-
-  detectTheme() {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-    if (prefersDark.matches) {
-      document.body.classList.remove('theme-light');
-      document.body.classList.add('theme-dark');
-    }
   }
 };
 

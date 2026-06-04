@@ -46,6 +46,7 @@ private:
     std::string HandleEnableDevMode(const BridgeMessage& msg);
     std::string HandleDisableDevMode(const BridgeMessage& msg);
     std::string HandleSkipToPage(const BridgeMessage& msg);
+    std::string HandleGetWallpaper(const BridgeMessage& msg);
 
     static std::string SimulateUserCreation(const std::string& username,
                                              const std::string& password);

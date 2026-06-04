@@ -132,6 +132,7 @@ BridgeMessage MessageHandler::ParseMessage(const std::string& json) {
     else if (cmd == "enableDevMode") msg.command = BridgeCommand::EnableDevMode;
     else if (cmd == "disableDevMode") msg.command = BridgeCommand::DisableDevMode;
     else if (cmd == "skipToPage") msg.command = BridgeCommand::SkipToPage;
+    else if (cmd == "getWallpaper") msg.command = BridgeCommand::GetWallpaper;
     else if (cmd == "notify") msg.command = BridgeCommand::Notify;
     else msg.command = BridgeCommand::Unknown;
 

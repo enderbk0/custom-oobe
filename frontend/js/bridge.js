@@ -78,7 +78,8 @@ const Bridge = {
   getLogs() { return this.send('getLogs'); },
   enableDevMode() { return this.send('enableDevMode'); },
   disableDevMode() { return this.send('disableDevMode'); },
-  skipToPage(page) { return this.send('skipToPage', page); }
+  skipToPage(page) { return this.send('skipToPage', page); },
+  getWallpaper() { return this.send('getWallpaper'); }
 };
 
 if (window.chrome && window.chrome.webview) {

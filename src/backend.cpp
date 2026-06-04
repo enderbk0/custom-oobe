@@ -6,6 +6,9 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+#include <fstream>
+#include <vector>
+#include <algorithm>
 
 BackendService::BackendService()
     : m_handler(std::make_shared<MessageHandler>()) {
@@ -61,6 +64,8 @@ bool BackendService::Initialize() {
         [this](const BridgeMessage& msg) { return HandleDisableDevMode(msg); });
     m_handler->RegisterHandler(BridgeCommand::SkipToPage,
         [this](const BridgeMessage& msg) { return HandleSkipToPage(msg); });
+    m_handler->RegisterHandler(BridgeCommand::GetWallpaper,
+        [this](const BridgeMessage& msg) { return HandleGetWallpaper(msg); });
 
     Logger::Instance().Info("BackendService handlers registered");
 
@@ -253,6 +258,58 @@ std::string BackendService::HandleSkipToPage(const BridgeMessage& msg) {
     Logger::Instance().Info("Skip to page: " + msg.payload);
     return MessageHandler::CreateResponse(msg.requestId, true,
         "Skipped to " + msg.payload);
+}
+
+static std::string Base64Encode(const std::vector<uint8_t>& data) {
+    static const char* b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string result;
+    result.reserve(((data.size() + 2) / 3) * 4);
+    for (size_t i = 0; i < data.size(); i += 3) {
+        uint32_t val = (uint32_t)data[i] << 16;
+        if (i + 1 < data.size()) val |= (uint32_t)data[i + 1] << 8;
+        if (i + 2 < data.size()) val |= (uint32_t)data[i + 2];
+        result.push_back(b64[(val >> 18) & 0x3F]);
+        result.push_back(b64[(val >> 12) & 0x3F]);
+        result.push_back(i + 1 < data.size() ? b64[(val >> 6) & 0x3F] : '=');
+        result.push_back(i + 2 < data.size() ? b64[val & 0x3F] : '=');
+    }
+    return result;
+}
+
+static std::string GetMimeForExtension(const std::wstring& path) {
+    std::wstring ext = path;
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::towlower);
+    if (ext.find(L".jpg") != std::wstring::npos || ext.find(L".jpeg") != std::wstring::npos)
+        return "image/jpeg";
+    if (ext.find(L".png") != std::wstring::npos) return "image/png";
+    if (ext.find(L".bmp") != std::wstring::npos) return "image/bmp";
+    return "image/jpeg";
+}
+
+std::string BackendService::HandleGetWallpaper(const BridgeMessage& msg) {
+    wchar_t wallpaperPath[MAX_PATH];
+    if (!SystemParametersInfoW(SPI_GETDESKWALLPAPER, MAX_PATH, wallpaperPath, 0)) {
+        Logger::Instance().Warning("Failed to get desktop wallpaper path");
+        return MessageHandler::CreateResponse(msg.requestId, true, "");
+    }
+
+    std::ifstream file(wallpaperPath, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        Logger::Instance().Warning("Failed to open wallpaper file");
+        return MessageHandler::CreateResponse(msg.requestId, true, "");
+    }
+
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<uint8_t> buffer(static_cast<size_t>(size));
+    if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
+        return MessageHandler::CreateResponse(msg.requestId, true, "");
+    }
+
+    std::string mime = GetMimeForExtension(wallpaperPath);
+    std::string b64 = Base64Encode(buffer);
+    std::string dataUrl = "data:" + mime + ";base64," + b64;
+    return MessageHandler::CreateResponse(msg.requestId, true, dataUrl);
 }
 
 std::string BackendService::SimulateUserCreation(const std::string& username,

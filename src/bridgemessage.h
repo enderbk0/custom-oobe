@@ -36,6 +36,7 @@ enum class BridgeCommand {
     EnableDevMode,
     DisableDevMode,
     SkipToPage,
+    GetWallpaper,
 
     Notify
 };

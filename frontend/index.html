@@ -4,66 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Windows Setup</title>
-  <link rel="stylesheet" href="css/themes.css">
-  <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/fluent.css">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/oobe.css">
 </head>
-<body class="theme-light" role="application">
-  <div id="app" class="app-container">
-    <header id="app-header" class="app-header" role="banner">
-      <div class="header-progress">
-        <div id="progress-bar" class="progress-bar" role="progressbar"
-             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="progress-fill"></div>
+<body>
+  <div id="wallpaper" class="wallpaper-layer"></div>
+
+  <div class="oobe-root">
+    <div class="oobe-card">
+      <div class="card-left">
+        <div class="animation-container">
+          <div class="oobe-animation">
+            <div class="anim-circle c1"></div>
+            <div class="anim-circle c2"></div>
+            <div class="anim-circle c3"></div>
+            <div class="anim-circle c4"></div>
+            <div class="anim-circle c5"></div>
+            <div class="anim-dot-grid"></div>
+          </div>
         </div>
       </div>
-      <div class="header-content">
-        <span id="page-indicator" class="page-indicator">1 of 15</span>
-      </div>
-    </header>
-
-    <main id="page-container" class="page-container" role="main">
-      <div id="page-welcome" class="page active" role="region" aria-label="Welcome"></div>
-      <div id="page-region" class="page" role="region" aria-label="Region selection"></div>
-      <div id="page-keyboard" class="page" role="region" aria-label="Keyboard layout"></div>
-      <div id="page-keyboard-secondary" class="page" role="region" aria-label="Secondary keyboard layout"></div>
-      <div id="page-network" class="page" role="region" aria-label="Network setup"></div>
-      <div id="page-license" class="page" role="region" aria-label="License agreement"></div>
-      <div id="page-device-naming" class="page" role="region" aria-label="Name your device"></div>
-      <div id="page-account" class="page" role="region" aria-label="Account creation"></div>
-      <div id="page-password" class="page" role="region" aria-label="Create password"></div>
-      <div id="page-privacy" class="page" role="region" aria-label="Privacy settings"></div>
-      <div id="page-customization" class="page" role="region" aria-label="Customize your experience"></div>
-      <div id="page-summary" class="page" role="region" aria-label="Summary"></div>
-      <div id="page-preparing" class="page" role="region" aria-label="Preparing Windows"></div>
-      <div id="page-hi" class="page" role="region" aria-label="Welcome back"></div>
-      <div id="page-completion" class="page" role="region" aria-label="Setup complete"></div>
-    </main>
-
-    <footer id="app-footer" class="app-footer" role="contentinfo">
-      <div class="footer-nav">
-        <button id="btn-back" class="btn btn-ghost" disabled aria-label="Go back">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Back
-        </button>
-        <div class="footer-right">
-          <button id="btn-next" class="btn btn-primary" aria-label="Continue">
+      <div class="card-right">
+        <div class="card-body">
+          <main id="page-container" class="page-container">
+            <div id="page-welcome" class="page active"></div>
+            <div id="page-region" class="page"></div>
+            <div id="page-keyboard" class="page"></div>
+            <div id="page-keyboard-secondary" class="page"></div>
+            <div id="page-network" class="page"></div>
+            <div id="page-license" class="page"></div>
+            <div id="page-device-naming" class="page"></div>
+            <div id="page-account" class="page"></div>
+            <div id="page-password" class="page"></div>
+            <div id="page-privacy" class="page"></div>
+            <div id="page-customization" class="page"></div>
+            <div id="page-summary" class="page"></div>
+            <div id="page-preparing" class="page"></div>
+            <div id="page-hi" class="page"></div>
+            <div id="page-completion" class="page"></div>
+          </main>
+        </div>
+        <div class="card-footer">
+          <button id="btn-back" class="nav-btn nav-back" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back
+          </button>
+          <button id="btn-next" class="nav-btn nav-next">
             Next
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </div>
       </div>
-    </footer>
+    </div>
   </div>
 
-  <div id="dev-panel" class="dev-panel hidden" role="region" aria-label="Developer tools">
+  <div class="system-tray">
+    <button class="tray-btn" id="btn-accessibility" title="Accessibility">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C13.1046 2 14 2.89543 14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2Z"/>
+        <path d="M21 9H15V22H13V16H11V22H9V9H3V7H21V9Z"/>
+      </svg>
+    </button>
+    <button class="tray-btn" id="btn-volume" title="Volume">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23ZM16.5 12C16.5 10.23 15.5 8.71 14 7.97V16.02C15.5 15.29 16.5 13.77 16.5 12ZM3 9V15H7L12 20V4L7 9H3Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="dev-panel" class="dev-panel hidden">
     <div class="dev-header">
       <span>Developer Mode</span>
       <button id="btn-dev-close" class="btn btn-small" aria-label="Close developer panel">&times;</button>
@@ -75,7 +87,7 @@
         <button id="btn-dev-jump" class="btn btn-small">Go</button>
       </div>
       <div class="dev-section">
-        <button id="btn-dev-reset" class="btn btn-small btn-danger">Reset State</button>
+        <button id="btn-dev-reset" class="btn btn-small" style="background:rgba(196,43,28,0.7)">Reset State</button>
         <button id="btn-dev-export" class="btn btn-small">Export State</button>
         <button id="btn-dev-import" class="btn btn-small">Import State</button>
       </div>
@@ -84,7 +96,7 @@
           <input type="checkbox" id="chk-mock-data"> Mock Data
         </label>
       </div>
-      <div class="dev-section dev-logs">
+      <div class="dev-section">
         <label>Logs:</label>
         <div id="dev-log-output" class="dev-log-output"></div>
       </div>
