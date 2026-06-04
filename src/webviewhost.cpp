@@ -5,6 +5,7 @@
 #include "logging.h"
 #include <WebView2.h>
 #include <wrl.h>
+#include <algorithm>
 
 using namespace Microsoft::WRL;
 
@@ -118,9 +119,11 @@ bool WebViewHost::Initialize(HWND parentWindow) {
 
                             std::wstring indexPath =
                                 m_frontendPath + L"\\index.html";
+                            std::wstring fileUrl = L"file:///" + indexPath;
+                            std::replace(fileUrl.begin(), fileUrl.end(), L'\\', L'/');
                             Logger::Instance().Info(
-                                "Navigating to: " + NarrowString(indexPath));
-                            m_webview->Navigate(indexPath.c_str());
+                                "Navigating to: " + NarrowString(fileUrl));
+                            m_webview->Navigate(fileUrl.c_str());
 
                             m_initialized = true;
                             Logger::Instance().Info(
