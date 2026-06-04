@@ -7,8 +7,6 @@
 #pragma comment(lib, "Shcore.lib")
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
-    MessageBoxW(nullptr, L"wWinMain entered", L"Debug", MB_OK);
-
     HeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
     auto setDpiCtx = reinterpret_cast<BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT)>(

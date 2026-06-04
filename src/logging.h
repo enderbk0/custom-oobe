@@ -47,7 +47,8 @@ private:
     std::ofstream m_fileStream;
     LogLevel m_minLevel = LogLevel::Debug;
     bool m_debugEnabled = false;
-    mutable std::mutex m_mutex;
+    bool m_initialized = false;
+    mutable std::recursive_mutex m_mutex;
     LogCallback m_callback;
     std::vector<std::string> m_recentLogs;
     static constexpr size_t MAX_RECENT_LOGS = 1000;

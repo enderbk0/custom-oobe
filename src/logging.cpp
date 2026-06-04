@@ -18,9 +18,10 @@ Logger::~Logger() {
 }
 
 void Logger::Initialize(const std::wstring& logDir) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-
     std::wstring dir = logDir;
+    if (dir.empty()) {
+        dir = L".\\logs";
+    }
     if (dir.back() != L'\\' && dir.back() != L'/') {
         dir += L'\\';
     }
@@ -35,26 +36,31 @@ void Logger::Initialize(const std::wstring& logDir) {
     ss << dir << L"oobe_"
        << std::put_time(&tm, L"%Y%m%d_%H%M%S")
        << L".log";
-    m_logPath = ss.str();
 
-    m_fileStream.open(m_logPath, std::ios::out | std::ios::app);
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        m_logPath = ss.str();
+        m_fileStream.open(m_logPath, std::ios::out | std::ios::app);
+        m_initialized = true;
+    }
+
     if (m_fileStream.is_open()) {
         Info("Logger initialized");
     }
 }
 
 void Logger::SetLogLevel(LogLevel level) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_minLevel = level;
 }
 
 void Logger::EnableDebug(bool enable) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_debugEnabled = enable;
 }
 
 void Logger::Log(LogLevel level, const std::string& message) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     if (level < m_minLevel) return;
     if (level == LogLevel::Debug && !m_debugEnabled) return;
 
@@ -96,7 +102,7 @@ void Logger::Error(const std::string& message) {
 }
 
 std::vector<std::string> Logger::GetRecentLogs(size_t count) const {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     if (m_recentLogs.size() <= count) {
         return m_recentLogs;
     }
@@ -111,7 +117,7 @@ std::wstring Logger::GetLogPath() const {
 }
 
 void Logger::SetCallback(LogCallback callback) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
     m_callback = std::move(callback);
 }
 
