@@ -2,55 +2,47 @@ const PagePrivacy = {
   render() {
     const container = document.getElementById('page-privacy');
     container.innerHTML = `
-      <h1>Privacy settings for your device</h1>
-      <p class="subtitle">Choose the privacy settings that are right for you. You can change these later.</p>
-      <div class="content-area">
-        <div class="privacy-section">
-          <div class="form-toggle">
-            <div>
-              <div class="toggle-label">Location</div>
-              <div class="toggle-description">Let Windows and apps access your location</div>
-            </div>
-            <input type="checkbox" id="privacy-location" checked>
-          </div>
-        </div>
-        <div class="privacy-section">
-          <div class="form-toggle">
-            <div>
-              <div class="toggle-label">Find my device</div>
-              <div class="toggle-description">Help protect your device by letting Windows find it</div>
-            </div>
-            <input type="checkbox" id="privacy-find-device" checked>
-          </div>
-        </div>
-        <div class="privacy-section">
-          <div class="form-toggle">
-            <div>
-              <div class="toggle-label">Ad tracking</div>
-              <div class="toggle-description">Let apps show me personalized ads</div>
-            </div>
-            <input type="checkbox" id="privacy-ads">
-          </div>
-        </div>
-        <div class="privacy-section">
-          <div class="form-toggle">
-            <div>
-              <div class="toggle-label">Diagnostic data</div>
-              <div class="toggle-description">Send diagnostic data to Microsoft</div>
-            </div>
-            <input type="checkbox" id="privacy-diagnostics" checked>
-          </div>
-        </div>
-        <div class="privacy-section">
-          <div class="form-toggle">
-            <div>
-              <div class="toggle-label">Tailored experiences</div>
-              <div class="toggle-description">Get tips and suggestions based on your usage</div>
-            </div>
-            <input type="checkbox" id="privacy-tailored">
-          </div>
-        </div>
+      <div class="body-header">
+        <h1 class="text-title">Privacy settings for your device</h1>
       </div>
+      <p class="content-lead">Choose the privacy settings that are right for you. You can change these later.</p>
+      <fieldset>
+        <div class="template-input inputType_checkbox">
+          <input type="checkbox" id="privacy-location" checked />
+          <label for="privacy-location">
+            <div style="color:#fff;font-weight:600">Location</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Let Windows and apps access your location</p>
+          </label>
+        </div>
+        <div class="template-input inputType_checkbox">
+          <input type="checkbox" id="privacy-find-device" checked />
+          <label for="privacy-find-device">
+            <div style="color:#fff;font-weight:600">Find my device</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Help protect your device by letting Windows find it</p>
+          </label>
+        </div>
+        <div class="template-input inputType_checkbox">
+          <input type="checkbox" id="privacy-ads" />
+          <label for="privacy-ads">
+            <div style="color:#fff;font-weight:600">Ad tracking</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Let apps show me personalized ads</p>
+          </label>
+        </div>
+        <div class="template-input inputType_checkbox">
+          <input type="checkbox" id="privacy-diagnostics" checked />
+          <label for="privacy-diagnostics">
+            <div style="color:#fff;font-weight:600">Diagnostic data</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Send diagnostic data to Microsoft</p>
+          </label>
+        </div>
+        <div class="template-input inputType_checkbox">
+          <input type="checkbox" id="privacy-tailored" />
+          <label for="privacy-tailored">
+            <div style="color:#fff;font-weight:600">Tailored experiences</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Get tips and suggestions based on your usage</p>
+          </label>
+        </div>
+      </fieldset>
     `;
   },
 

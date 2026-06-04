@@ -1,44 +1,70 @@
+const NETWORKS = [
+  { ssid: 'HomeNetwork', secured: true, strength: 3 },
+  { ssid: 'WorkWiFi', secured: true, strength: 4 },
+  { ssid: 'Guest_5GHz', secured: true, strength: 2 },
+  { ssid: 'CoffeeShop', secured: false, strength: 1 },
+  { ssid: 'Library_Public', secured: false, strength: 3 },
+  { ssid: 'School_Campus', secured: true, strength: 2 },
+  { ssid: 'Neighbor_2G', secured: true, strength: 1 },
+  { ssid: 'Office_Ext', secured: true, strength: 3 },
+];
+
+const WIFI_ICONS = ['', '\uE701', '\uE701', '\uE701', '\uE701'];
+
 const PageNetwork = {
   render() {
     const container = document.getElementById('page-network');
     container.innerHTML = `
-      <h1>Let's connect you to a network</h1>
-      <p class="subtitle">Choose a network to connect to, or connect later.</p>
-      <div class="content-area">
-        <div class="network-list">
-          <div class="selection-card" data-action="skip" tabindex="0" role="button">
-            <div class="selection-card-icon network-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 22C13.1046 22 14 21.1046 14 20C14 18.8954 13.1046 18 12 18C10.8954 18 10 18.8954 10 20C10 21.1046 10.8954 22 12 22Z" fill="currentColor"/>
-                <path d="M12 14C14.2091 14 16 15.7909 16 18H8C8 15.7909 9.79086 14 12 14Z" fill="currentColor" opacity="0.6"/>
-                <path d="M12 10C15.3137 10 18 12.6863 18 16H6C6 12.6863 8.68629 10 12 10Z" fill="currentColor" opacity="0.4"/>
-              </svg>
-            </div>
-            <div class="selection-card-content">
-              <div class="selection-card-title">I don't have internet</div>
-              <div class="selection-card-subtitle">Continue with limited setup</div>
-            </div>
-          </div>
-          <div class="mt-md">
-            <div class="radio-group" id="network-list">
-              <div class="radio-option">
-                <input type="radio" name="network" id="net-eth" value="ethernet">
-                <label for="net-eth" class="radio-label">Ethernet (Connected)</label>
+      <div class="body-header">
+        <h1 class="text-title">Let's connect you to a network</h1>
+      </div>
+      <p class="content-lead">Choose a network to connect to during setup.</p>
+      <fieldset>
+        <legend>Select a network</legend>
+        <div class="scroll-view" style="max-height:280px">
+          <div class="list" id="network-list">
+            ${NETWORKS.map((n, i) => `
+              <div class="list-item ${i === 0 ? 'selected' : ''}" data-ssid="${n.ssid}" tabindex="0" role="button">
+                <span class="list-icon icon icon-connect-small"></span>
+                <div class="container-text">
+                  <div class="containertext-item">
+                    <div class="containertext-title">${n.ssid}</div>
+                    <div class="secondary-container-text">${n.secured ? 'Secured' : 'Open'}</div>
+                  </div>
+                </div>
               </div>
-              <div class="radio-option">
-                <input type="radio" name="network" id="net-wifi" value="wifi" disabled>
-                <label for="net-wifi" class="radio-label">Wi-Fi (No networks found)</label>
-              </div>
-            </div>
+            `).join('')}
           </div>
         </div>
+      </fieldset>
+      <div id="network-password-area" style="display:none">
+        <fieldset>
+          <legend>Network password</legend>
+          <div class="template-input">
+            <input type="password" id="network-password" class="win-textbox" placeholder="Enter network password" />
+          </div>
+        </fieldset>
       </div>
     `;
 
-    container.querySelector('[data-action="skip"]').addEventListener('click', () => {
-      AppState.set('networkConnected', false);
-      Bridge.setNetworkConfig({ connected: false });
-      Router.goForward();
+    const items = container.querySelectorAll('.list-item');
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        items.forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        const ssid = item.dataset.ssid;
+        AppState.set('network', ssid);
+        Bridge.setNetwork(ssid);
+        const network = NETWORKS.find(n => n.ssid === ssid);
+        const pwArea = document.getElementById('network-password-area');
+        if (pwArea) pwArea.style.display = network && network.secured ? 'block' : 'none';
+      });
     });
+  },
+
+  onBeforeNext() {
+    const sel = AppState.get('network');
+    if (!sel) return false;
+    return true;
   }
 };

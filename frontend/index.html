@@ -4,88 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Windows Setup</title>
-  <link rel="stylesheet" href="css/themes.css">
-  <link rel="stylesheet" href="css/oobe.css">
-  <link rel="stylesheet" href="css/fluent.css">
-  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/app.css">
 </head>
-<body class="theme-dark">
-  <div id="wallpaper" class="wallpaper-layer"></div>
+<body>
+  <div class="control-app">
+    <div class="app-content">
+      <div class="control-page">
+        <div class="page-body">
+          <div class="body-container">
+            <div class="container-content">
+              <div class="content-box" id="page-container">
+                <div id="page-region" class="page"></div>
+                <div id="page-keyboard" class="page"></div>
+                <div id="page-keyboard-secondary" class="page"></div>
+                <div id="page-network" class="page"></div>
+                <div id="page-license" class="page"></div>
+                <div id="page-device-naming" class="page"></div>
+                <div id="page-account" class="page"></div>
+                <div id="page-password" class="page"></div>
+                <div id="page-privacy" class="page"></div>
+                <div id="page-customization" class="page"></div>
+                <div id="page-summary" class="page"></div>
+                <div id="page-preparing" class="page"></div>
+                <div id="page-hi" class="page"></div>
+                <div id="page-completion" class="page"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <div class="oobe-root">
-    <div class="oobe-card">
-      <div class="card-left">
-        <div class="animation-container">
-          <div class="oobe-animation">
-            <div class="anim-circle c1"></div>
-            <div class="anim-circle c2"></div>
-            <div class="anim-circle c3"></div>
-            <div class="anim-circle c4"></div>
-            <div class="anim-circle c5"></div>
-            <div class="anim-dot-grid"></div>
+        <div class="page-footer">
+          <div class="footer-icons">
+            <div class="align-self-start">
+              <button class="icon icon-win-easeOfAccess" id="btn-accessibility"
+                      title="Ease of access"></button>
+            </div>
+            <div class="align-self-end">
+              <button class="icon icon-win-keyboardStandard" id="btn-keyboard"
+                      title="Keyboard"></button>
+              <button class="icon icon-volume" id="btn-volume"
+                      title="Volume"></button>
+            </div>
+          </div>
+          <div class="footer-buttons">
+            <button id="btn-back" class="win-button" disabled>Back</button>
+            <button id="btn-next" class="win-button control-button button_primary">Next</button>
           </div>
         </div>
       </div>
-      <div class="card-right">
-        <div class="card-body">
-          <main id="page-container" class="page-container">
-            <div id="page-region" class="page active"></div>
-            <div id="page-keyboard" class="page"></div>
-            <div id="page-keyboard-secondary" class="page"></div>
-            <div id="page-network" class="page"></div>
-            <div id="page-license" class="page"></div>
-            <div id="page-device-naming" class="page"></div>
-            <div id="page-account" class="page"></div>
-            <div id="page-password" class="page"></div>
-            <div id="page-privacy" class="page"></div>
-            <div id="page-customization" class="page"></div>
-            <div id="page-summary" class="page"></div>
-            <div id="page-preparing" class="page"></div>
-            <div id="page-hi" class="page"></div>
-            <div id="page-completion" class="page"></div>
-          </main>
-        </div>
-        <div class="card-footer">
-          <button id="btn-back" class="nav-btn nav-back" disabled>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Back
-          </button>
-          <button id="btn-next" class="nav-btn nav-next">
-            Next
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <div class="system-tray">
-    <button class="tray-btn" id="btn-accessibility" title="Accessibility">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C13.1046 2 14 2.89543 14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2Z"/>
-        <path d="M21 9H15V22H13V16H11V22H9V9H3V7H21V9Z"/>
-      </svg>
-    </button>
-    <button class="tray-btn" id="btn-volume" title="Volume">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23ZM16.5 12C16.5 10.23 15.5 8.71 14 7.97V16.02C15.5 15.29 16.5 13.77 16.5 12ZM3 9V15H7L12 20V4L7 9H3Z"/>
-      </svg>
-    </button>
   </div>
 
   <div id="dev-panel" class="dev-panel hidden">
     <div class="dev-header">
       <span>Developer Mode</span>
-      <button id="btn-dev-close" class="btn btn-small" aria-label="Close developer panel">&times;</button>
+      <button id="btn-dev-close" class="btn btn-small">&times;</button>
     </div>
     <div class="dev-body">
       <div class="dev-section">
         <label for="dev-page-select">Jump to page:</label>
-        <select id="dev-page-select" class="dev-select"></select>
+        <select id="dev-page-select"></select>
         <button id="btn-dev-jump" class="btn btn-small">Go</button>
       </div>
       <div class="dev-section">

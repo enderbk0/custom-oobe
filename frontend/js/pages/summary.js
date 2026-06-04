@@ -2,76 +2,65 @@ const PageSummary = {
   render() {
     const container = document.getElementById('page-summary');
     container.innerHTML = `
-      <h1>Review your settings</h1>
-      <p class="subtitle">We'll apply these settings when you continue.</p>
-      <div class="content-area">
-        <div class="summary-section">
-          <h3>Region & Language</h3>
-          <div class="summary-item">
-            <span class="summary-item-label">Region</span>
-            <span class="summary-item-value" id="summary-region">-</span>
+      <div class="body-header">
+        <h1 class="text-title">Review your settings</h1>
+      </div>
+      <p class="content-lead">We'll apply these settings to your device.</p>
+      <div class="scroll-view" style="max-height:300px">
+        <div class="list">
+          <div class="list-item non-interactive">
+            <span class="list-icon icon icon-globe"></span>
+            <div class="container-text">
+              <div class="containertext-item">
+                <div class="containertext-title">Region</div>
+                <div class="secondary-container-text" id="summary-region">-</div>
+              </div>
+            </div>
           </div>
-          <div class="summary-item">
-            <span class="summary-item-label">Keyboard layout</span>
-            <span class="summary-item-value" id="summary-keyboard">-</span>
+          <div class="list-item non-interactive">
+            <span class="list-icon icon icon-win-keyboardStandard"></span>
+            <div class="container-text">
+              <div class="containertext-item">
+                <div class="containertext-title">Keyboard layout</div>
+                <div class="secondary-container-text" id="summary-keyboard">-</div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="summary-section">
-          <h3>Device</h3>
-          <div class="summary-item">
-            <span class="summary-item-label">Device name</span>
-            <span class="summary-item-value" id="summary-device-name">-</span>
+          <div class="list-item non-interactive">
+            <span class="list-icon icon icon-connect-small"></span>
+            <div class="container-text">
+              <div class="containertext-item">
+                <div class="containertext-title">Network</div>
+                <div class="secondary-container-text" id="summary-network">-</div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="summary-section">
-          <h3>Account</h3>
-          <div class="summary-item">
-            <span class="summary-item-label">Username</span>
-            <span class="summary-item-value" id="summary-account">-</span>
+          <div class="list-item non-interactive">
+            <span class="list-icon icon icon-user"></span>
+            <div class="container-text">
+              <div class="containertext-item">
+                <div class="containertext-title">Account name</div>
+                <div class="secondary-container-text" id="summary-account">-</div>
+              </div>
+            </div>
           </div>
-          <div class="summary-item">
-            <span class="summary-item-label">Password</span>
-            <span class="summary-item-value" id="summary-password">-</span>
-          </div>
-        </div>
-        <div class="summary-section">
-          <h3>Privacy</h3>
-          <div class="summary-item">
-            <span class="summary-item-label">Location</span>
-            <span class="summary-item-value" id="summary-location">-</span>
-          </div>
-          <div class="summary-item">
-            <span class="summary-item-label">Diagnostic data</span>
-            <span class="summary-item-value" id="summary-diagnostics">-</span>
+          <div class="list-item non-interactive">
+            <span class="list-icon icon icon-smile"></span>
+            <div class="container-text">
+              <div class="containertext-item">
+                <div class="containertext-title">Device name</div>
+                <div class="secondary-container-text" id="summary-device">-</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     `;
 
-    Router.registerActivateHook('summary', () => this.updateDisplay());
-  },
-
-  updateDisplay() {
-    const state = AppState.getAll();
-
-    const setText = (id, value) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value || '-';
-    };
-
-    setText('summary-region', state.region || '-');
-    setText('summary-keyboard', state.keyboardLayout || '-');
-    setText('summary-device-name', state.deviceName || '-');
-    setText('summary-account', state.accountName || '-');
-    setText('summary-password', state.password ? 'Configured' : 'None');
-
-    const privacy = state.privacySettings || {};
-    setText('summary-location', privacy.location ? 'On' : 'Off');
-    setText('summary-diagnostics', privacy.diagnostics ? 'On' : 'Off');
-  },
-
-  onBeforeNext() {
-    this.updateDisplay();
-    return true;
+    document.getElementById('summary-region').textContent = AppState.get('region') || '-';
+    document.getElementById('summary-keyboard').textContent = AppState.get('keyboard') || '-';
+    document.getElementById('summary-network').textContent = AppState.get('network') || '-';
+    document.getElementById('summary-account').textContent = AppState.get('accountName') || '-';
+    document.getElementById('summary-device').textContent = AppState.get('deviceName') || '-';
   }
 };

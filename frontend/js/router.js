@@ -95,20 +95,14 @@ const Router = {
     }
 
     fromEl.classList.remove('active');
-    fromEl.classList.add('exit-left');
-    toEl.classList.add('active', 'enter-right');
+    toEl.classList.add('active');
+    this.currentPage = toPage;
+    this.updateUI();
 
-    setTimeout(() => {
-      fromEl.classList.remove('exit-left');
-      toEl.classList.remove('enter-right');
-      this.currentPage = toPage;
-      this.updateUI();
+    const hook = this._pageActivateHooks[toPage];
+    if (hook) hook();
 
-      const hook = this._pageActivateHooks[toPage];
-      if (hook) hook();
-
-      this.isTransitioning = false;
-    }, 350);
+    this.isTransitioning = false;
   },
 
   goForward() {
@@ -129,19 +123,6 @@ const Router = {
 
   updateUI() {
     const idx = this.getCurrentIndex();
-    const total = PAGE_ORDER.length;
-    const progress = ((idx + 1) / total) * 100;
-
-    const progressBar = document.getElementById('progress-bar');
-    const fill = progressBar ? progressBar.querySelector('.progress-fill') : null;
-    if (fill) {
-      fill.style.width = Math.min(progress, 100) + '%';
-    }
-
-    const indicator = document.getElementById('page-indicator');
-    if (indicator) {
-      indicator.textContent = `${idx + 1} of ${total}`;
-    }
 
     const btnBack = document.getElementById('btn-back');
     if (btnBack) {

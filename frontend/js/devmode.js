@@ -35,7 +35,7 @@ const DevMode = {
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         AppState.reset();
-        Router.goTo('welcome');
+        Router.goTo(PAGE_ORDER[0]);
         this.log('State reset');
       });
     }

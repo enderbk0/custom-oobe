@@ -40,33 +40,36 @@ const PageRegion = {
   render() {
     const container = document.getElementById('page-region');
     container.innerHTML = `
-      <h1>Is this the right region?</h1>
-      <p class="subtitle">We use your region to give you the right experience.</p>
-      <div class="content-area">
-        <div class="region-list options-list">
-          ${REGIONS.map(r => `
-            <div class="selection-card" data-region="${r.code}" tabindex="0" role="button">
-              <div class="selection-card-content">
-                <div class="selection-card-title">${r.name}</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
+      <div class="body-header">
+        <h1 class="text-title">Is this the right region?</h1>
       </div>
+      <p class="content-lead">We use your region to give you the right experience.</p>
+      <fieldset>
+        <legend>Select your region</legend>
+        <div class="scroll-view" style="max-height:300px">
+          <div class="list" id="region-list">
+            ${REGIONS.map(r => `
+              <div class="list-item" data-region="${r.code}" tabindex="0" role="button">
+                <span class="list-item-title">${r.name}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </fieldset>
     `;
 
-    const cards = container.querySelectorAll('.selection-card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        cards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        AppState.set('region', card.dataset.region);
-        Bridge.setRegion(card.dataset.region);
+    const items = container.querySelectorAll('.list-item');
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        items.forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        AppState.set('region', item.dataset.region);
+        Bridge.setRegion(item.dataset.region);
       });
-      card.addEventListener('keydown', (e) => {
+      item.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          card.click();
+          item.click();
         }
       });
     });
@@ -80,18 +83,7 @@ const PageRegion = {
 
   onBeforeNext() {
     const selected = AppState.get('region');
-    if (!selected) {
-      const container = document.getElementById('page-region');
-      let errorEl = container.querySelector('.form-error');
-      if (!errorEl) {
-        errorEl = document.createElement('div');
-        errorEl.className = 'form-error';
-        errorEl.style.textAlign = 'center';
-        container.querySelector('.content-area').after(errorEl);
-      }
-      errorEl.textContent = 'Please select a region before continuing';
-      return false;
-    }
+    if (!selected) return false;
     return true;
   }
 };

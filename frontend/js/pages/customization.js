@@ -2,69 +2,41 @@ const PageCustomization = {
   render() {
     const container = document.getElementById('page-customization');
     container.innerHTML = `
-      <h1>Customize your experience</h1>
-      <p class="subtitle">Tell us how you plan to use this device so we can tailor your experience.</p>
-      <div class="content-area">
-        <div class="selection-card" data-value="entertainment" tabindex="0" role="button">
-          <div class="selection-card-content">
-            <div class="selection-card-title">Entertainment</div>
-            <div class="selection-card-subtitle">Watch movies, play games, and stream content</div>
-          </div>
-        </div>
-        <div class="mt-sm selection-card" data-value="gaming" tabindex="0" role="button">
-          <div class="selection-card-content">
-            <div class="selection-card-title">Gaming</div>
-            <div class="selection-card-subtitle">Play PC games</div>
-          </div>
-        </div>
-        <div class="mt-sm selection-card" data-value="school" tabindex="0" role="button">
-          <div class="selection-card-content">
-            <div class="selection-card-title">Schoolwork</div>
-            <div class="selection-card-subtitle">Take notes, write papers, and do research</div>
-          </div>
-        </div>
-        <div class="mt-sm selection-card" data-value="creativity" tabindex="0" role="button">
-          <div class="selection-card-content">
-            <div class="selection-card-title">Creativity</div>
-            <div class="selection-card-subtitle">Design, draw, edit photos, and make music</div>
-          </div>
-        </div>
-        <div class="mt-sm selection-card" data-value="business" tabindex="0" role="button">
-          <div class="selection-card-content">
-            <div class="selection-card-title">Business</div>
-            <div class="selection-card-subtitle">Work, email, and productivity</div>
-          </div>
-        </div>
-        <div class="mt-sm selection-card" data-value="family" tabindex="0" role="button">
-          <div class="selection-card-content">
-            <div class="selection-card-title">Family</div>
-            <div class="selection-card-subtitle">Stay connected with family</div>
-          </div>
-        </div>
+      <div class="body-header">
+        <h1 class="text-title">Customize your experience</h1>
       </div>
+      <p class="content-lead">Choose how you want to use this device.</p>
+      <fieldset>
+        <div class="template-input inputType_radio">
+          <input type="radio" name="customization" id="cust-personal" value="personal" checked />
+          <label for="cust-personal">
+            <div style="color:#fff;font-weight:600">Personal use</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Set up for personal use with your Microsoft account</p>
+          </label>
+        </div>
+        <div class="template-input inputType_radio">
+          <input type="radio" name="customization" id="cust-work" value="work" />
+          <label for="cust-work">
+            <div style="color:#fff;font-weight:600">Work or school</div>
+            <p style="margin:0;color:rgba(255,255,255,0.7);font-size:12px">Set up for work or school with an organizational account</p>
+          </label>
+        </div>
+      </fieldset>
     `;
 
-    const cards = container.querySelectorAll('.selection-card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        cards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        AppState.set('customization', card.dataset.value);
-        Bridge.setCustomization({ usage: card.dataset.value });
-        setTimeout(() => {
-          document.getElementById('btn-next').focus();
-        }, 100);
-      });
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          card.click();
+    const radios = container.querySelectorAll('input[name="customization"]');
+    radios.forEach(r => {
+      r.addEventListener('change', () => {
+        if (r.checked) {
+          AppState.set('customization', r.value);
         }
       });
     });
-  },
 
-  onBeforeNext() {
-    return true;
+    const saved = AppState.get('customization');
+    if (saved) {
+      const el = container.querySelector(`#cust-${saved}`);
+      if (el) el.checked = true;
+    }
   }
 };
