@@ -99,6 +99,15 @@ const Router = {
     this.currentPage = toPage;
     this.updateUI();
 
+    const graphicArea = document.getElementById('graphic-area');
+    if (graphicArea) {
+      if (toPage === PAGE_ORDER[0]) {
+        graphicArea.style.display = 'flex';
+      } else {
+        graphicArea.style.display = 'none';
+      }
+    }
+
     const hook = this._pageActivateHooks[toPage];
     if (hook) hook();
 

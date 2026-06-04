@@ -7,49 +7,44 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <div class="control-app">
-    <div class="app-content">
-      <div class="control-page">
-        <div class="page-body">
-          <div class="body-container">
-            <div class="container-content">
-              <div class="content-box" id="page-container">
-                <div id="page-region" class="page"></div>
-                <div id="page-keyboard" class="page"></div>
-                <div id="page-keyboard-secondary" class="page"></div>
-                <div id="page-network" class="page"></div>
-                <div id="page-license" class="page"></div>
-                <div id="page-device-naming" class="page"></div>
-                <div id="page-account" class="page"></div>
-                <div id="page-password" class="page"></div>
-                <div id="page-privacy" class="page"></div>
-                <div id="page-customization" class="page"></div>
-                <div id="page-summary" class="page"></div>
-                <div id="page-preparing" class="page"></div>
-                <div id="page-hi" class="page"></div>
-                <div id="page-completion" class="page"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div id="bg-layer"></div>
 
-        <div class="page-footer">
-          <div class="footer-icons">
-            <div class="align-self-start">
-              <button class="icon icon-win-easeOfAccess" id="btn-accessibility"
-                      title="Ease of access"></button>
-            </div>
-            <div class="align-self-end">
-              <button class="icon icon-win-keyboardStandard" id="btn-keyboard"
-                      title="Keyboard"></button>
-              <button class="icon icon-volume" id="btn-volume"
-                      title="Volume"></button>
-            </div>
-          </div>
-          <div class="footer-buttons">
-            <button id="btn-back" class="win-button" disabled>Back</button>
-            <button id="btn-next" class="win-button control-button button_primary">Next</button>
-          </div>
+  <div class="Container">
+    <div class="content">
+      <div class="graphic halfSection" id="graphic-area">
+        <div id="animation-area"></div>
+      </div>
+      <div class="controls halfSection" id="page-container">
+        <div id="page-region" class="page active"></div>
+        <div id="page-keyboard" class="page"></div>
+        <div id="page-keyboard-secondary" class="page"></div>
+        <div id="page-network" class="page"></div>
+        <div id="page-license" class="page"></div>
+        <div id="page-device-naming" class="page"></div>
+        <div id="page-account" class="page"></div>
+        <div id="page-password" class="page"></div>
+        <div id="page-privacy" class="page"></div>
+        <div id="page-customization" class="page"></div>
+        <div id="page-summary" class="page"></div>
+        <div id="page-preparing" class="page"></div>
+        <div id="page-hi" class="page"></div>
+        <div id="page-completion" class="page"></div>
+      </div>
+    </div>
+
+    <div class="footerView">
+      <div class="page-footer">
+        <div class="footer-icons">
+          <button class="icon icon-win-easeOfAccess" id="btn-accessibility"
+                  title="Ease of access"></button>
+        </div>
+        <div class="footer-buttons">
+          <button id="btn-back" class="win-button" disabled>Back</button>
+          <button id="btn-next" class="win-button control-button button_primary">Next</button>
+          <button class="icon icon-win-keyboardStandard" id="btn-keyboard"
+                  title="Keyboard"></button>
+          <button class="icon icon-volume" id="btn-volume"
+                  title="Volume"></button>
         </div>
       </div>
     </div>
