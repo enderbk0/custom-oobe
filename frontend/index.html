@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:;">
+  <title>Windows Setup</title>
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/fluent.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-light" role="application">
+  <div id="app" class="app-container">
+    <header id="app-header" class="app-header" role="banner">
+      <div class="header-progress">
+        <div id="progress-bar" class="progress-bar" role="progressbar"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+      <div class="header-content">
+        <span id="page-indicator" class="page-indicator">1 of 15</span>
+      </div>
+    </header>
+
+    <main id="page-container" class="page-container" role="main">
+      <div id="page-welcome" class="page active" role="region" aria-label="Welcome"></div>
+      <div id="page-region" class="page" role="region" aria-label="Region selection"></div>
+      <div id="page-keyboard" class="page" role="region" aria-label="Keyboard layout"></div>
+      <div id="page-keyboard-secondary" class="page" role="region" aria-label="Secondary keyboard layout"></div>
+      <div id="page-network" class="page" role="region" aria-label="Network setup"></div>
+      <div id="page-license" class="page" role="region" aria-label="License agreement"></div>
+      <div id="page-device-naming" class="page" role="region" aria-label="Name your device"></div>
+      <div id="page-account" class="page" role="region" aria-label="Account creation"></div>
+      <div id="page-password" class="page" role="region" aria-label="Create password"></div>
+      <div id="page-privacy" class="page" role="region" aria-label="Privacy settings"></div>
+      <div id="page-customization" class="page" role="region" aria-label="Customize your experience"></div>
+      <div id="page-summary" class="page" role="region" aria-label="Summary"></div>
+      <div id="page-preparing" class="page" role="region" aria-label="Preparing Windows"></div>
+      <div id="page-hi" class="page" role="region" aria-label="Welcome back"></div>
+      <div id="page-completion" class="page" role="region" aria-label="Setup complete"></div>
+    </main>
+
+    <footer id="app-footer" class="app-footer" role="contentinfo">
+      <div class="footer-nav">
+        <button id="btn-back" class="btn btn-ghost" disabled aria-label="Go back">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+        <div class="footer-right">
+          <button id="btn-next" class="btn btn-primary" aria-label="Continue">
+            Next
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="dev-panel" class="dev-panel hidden" role="region" aria-label="Developer tools">
+    <div class="dev-header">
+      <span>Developer Mode</span>
+      <button id="btn-dev-close" class="btn btn-small" aria-label="Close developer panel">&times;</button>
+    </div>
+    <div class="dev-body">
+      <div class="dev-section">
+        <label for="dev-page-select">Jump to page:</label>
+        <select id="dev-page-select" class="dev-select"></select>
+        <button id="btn-dev-jump" class="btn btn-small">Go</button>
+      </div>
+      <div class="dev-section">
+        <button id="btn-dev-reset" class="btn btn-small btn-danger">Reset State</button>
+        <button id="btn-dev-export" class="btn btn-small">Export State</button>
+        <button id="btn-dev-import" class="btn btn-small">Import State</button>
+      </div>
+      <div class="dev-section">
+        <label>
+          <input type="checkbox" id="chk-mock-data"> Mock Data
+        </label>
+      </div>
+      <div class="dev-section dev-logs">
+        <label>Logs:</label>
+        <div id="dev-log-output" class="dev-log-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bridge.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/devmode.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

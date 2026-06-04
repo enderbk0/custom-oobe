@@ -1,0 +1,86 @@
+name: Build Custom OOBE
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup Visual Studio environment
+      uses: microsoft/setup-vs@v1
+      with:
+        vs-version: '17.0'
+        components:
+          - Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+          - Microsoft.VisualStudio.Component.Windows11SDK.22621
+
+    - name: Cache vcpkg packages
+      uses: actions/cache@v4
+      id: cache-vcpkg
+      with:
+        path: |
+          C:\vcpkg\installed
+          C:\vcpkg\packages
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Bootstrap vcpkg
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        if (-not (Test-Path "C:\vcpkg")) {
+          git clone https://github.com/microsoft/vcpkg C:\vcpkg
+          & "C:\vcpkg\bootstrap-vcpkg.bat"
+        }
+
+    - name: Install dependencies via vcpkg (manifest mode)
+      shell: pwsh
+      run: |
+        & "C:\vcpkg\vcpkg" install --triplet x64-windows
+
+    - name: Configure CMake
+      shell: pwsh
+      run: |
+        cmake -B build `
+          -S . `
+          -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET=x64-windows `
+          -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      shell: pwsh
+      run: |
+        cmake --build build --config Release
+
+    - name: Collect artifacts
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Path artifacts -Force
+        Copy-Item -Recurse "build\Release\*" "artifacts\" -ErrorAction SilentlyContinue
+        Compress-Archive -Path "artifacts\*" -DestinationPath "custom-oobe-release.zip"
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: custom-oobe-windows
+        path: artifacts/
+        if-no-files-found: error
+
+    - name: Upload release ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: custom-oobe-release-zip
+        path: custom-oobe-release.zip

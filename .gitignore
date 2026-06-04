@@ -1,0 +1,30 @@
+# Build output
+build/
+out/
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.lib
+*.exp
+
+# IDE files
+.vs/
+*.sln
+*.suo
+*.user
+*.vcxproj*
+CMakeSettings.json
+.vscode/
+.idea/
+
+# vcpkg
+vcpkg_installed/
+
+# Windows data
+*.log
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env

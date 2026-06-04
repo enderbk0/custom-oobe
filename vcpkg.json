@@ -1,0 +1,13 @@
+{
+  "name": "custom-oobe",
+  "version": "1.0.0",
+  "description": "Custom Windows OOBE Experience",
+  "homepage": "https://github.com/user/custom-oobe",
+  "dependencies": [
+    {
+      "name": "webview2",
+      "features": []
+    },
+    "wil"
+  ]
+}
