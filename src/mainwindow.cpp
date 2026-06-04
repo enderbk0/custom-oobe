@@ -64,8 +64,12 @@ bool MainWindow::Create() {
     );
 
     if (!m_hWnd) {
+        DWORD err = GetLastError();
         Logger::Instance().Error("Failed to create window: " +
-            std::to_string(GetLastError()));
+            std::to_string(err));
+        std::wstring errMsg = L"CreateWindowExW failed with error: " +
+            std::to_wstring(err);
+        MessageBoxW(nullptr, errMsg.c_str(), L"Error", MB_OK);
         return false;
     }
 

@@ -23,6 +23,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
 
     App app;
     if (!app.Initialize(hInstance)) {
+        MessageBoxW(nullptr, L"App::Initialize returned false", L"Debug", MB_OK);
         return 1;
     }
 
