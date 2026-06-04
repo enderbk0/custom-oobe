@@ -49,7 +49,6 @@ bool WebViewHost::Initialize(HWND parentWindow) {
 
     hr = m_webview->get_Settings(&m_settings);
     if (SUCCEEDED(hr) && m_settings) {
-        m_settings->put_AreDefaultScriptDialogsEnabled(FALSE);
         m_settings->put_IsScriptEnabled(TRUE);
         m_settings->put_IsWebMessageEnabled(TRUE);
         m_settings->put_AreDefaultScriptDialogsEnabled(FALSE);
@@ -101,25 +100,44 @@ HRESULT WebViewHost::CreateEnvironmentWithRetry(HWND hWnd,
     ICoreWebView2** webview) {
 
     wil::com_ptr<ICoreWebView2Environment> env;
-    HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(
+    HANDLE envCreated = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    HRESULT hr = E_FAIL;
+
+    HRESULT createHr = CreateCoreWebView2EnvironmentWithOptions(
         nullptr, nullptr, nullptr,
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-            [&env, hWnd, controller, webview](HRESULT result,
+            [&hr, &env, &envCreated, hWnd, controller,
+             webview](HRESULT result,
                 ICoreWebView2Environment* environment) -> HRESULT {
-                if (FAILED(result) || !environment) return result;
+                hr = result;
+                if (FAILED(result) || !environment) {
+                    SetEvent(envCreated);
+                    return result;
+                }
                 env = environment;
                 return environment->CreateCoreWebView2Controller(hWnd,
                     Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-                        [controller, webview](HRESULT result,
+                        [&hr, controller, webview,
+                         &envCreated](HRESULT result,
                             ICoreWebView2Controller* ctrl) -> HRESULT {
-                            if (FAILED(result) || !ctrl) return result;
-                            *controller = ctrl;
-                            (*controller)->AddRef();
-                            ctrl->get_CoreWebView2(webview);
-                            return S_OK;
+                            hr = result;
+                            if (SUCCEEDED(result) && ctrl) {
+                                *controller = ctrl;
+                                (*controller)->AddRef();
+                                ctrl->get_CoreWebView2(webview);
+                            }
+                            SetEvent(envCreated);
+                            return hr;
                         }).Get());
             }).Get());
 
+    if (FAILED(createHr)) {
+        CloseHandle(envCreated);
+        return createHr;
+    }
+
+    WaitForSingleObject(envCreated, INFINITE);
+    CloseHandle(envCreated);
     return hr;
 }
 
@@ -134,7 +152,7 @@ void WebViewHost::SetupEventHandlers(ICoreWebView2* webview) {
                 args->TryGetWebMessageAsString(&messageRaw);
                 if (messageRaw && m_handler) {
                     std::wstring wmsg(messageRaw.get());
-                    std::string msg(wmsg.begin(), wmsg.end());
+                    std::string msg = NarrowString(wmsg);
                     Logger::Instance().Debug("Message from web: " + msg);
                     m_handler->HandleMessage(msg, sender);
                 }
