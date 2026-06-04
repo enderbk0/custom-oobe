@@ -39,26 +39,21 @@ const App = {
 
   async loadPageContent() {
     const pageModules = [
-      'welcome', 'region', 'keyboard', 'keyboard-secondary',
-      'network', 'license', 'device-naming', 'account',
-      'password', 'privacy', 'customization', 'summary',
-      'preparing', 'hi', 'completion'
+      PageWelcome, PageRegion, PageKeyboard, PageKeyboardSecondary,
+      PageNetwork, PageLicense, PageDeviceNaming, PageAccount,
+      PagePassword, PagePrivacy, PageCustomization, PageSummary,
+      PagePreparing, PageHi, PageCompletion
     ];
 
-    for (const page of pageModules) {
+    for (const module of pageModules) {
       try {
-        const module = window['Page' + this.capitalize(page.replace(/-/g, ''))];
         if (module && module.render) {
           module.render();
         }
       } catch (e) {
-        console.error('App: Failed to load page:', page, e);
+        console.error('App: Failed to load page:', e);
       }
     }
-  },
-
-  capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
   },
 
   setupNavigation() {
